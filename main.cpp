@@ -26,5 +26,11 @@ int main() {
     Expression* e3 = new Mul(&(++(*x4)), &((*x5)++));// (++x4)*(x5++)
     cout << "3: " << e3->calculate() << endl; //-10.5
     delete e3;
-    return 0;
+  // 5
+  Interpreter* i2 = new Interpreter();
+  Expression* e5 = nullptr;
+    i2->setVariables("x=2");
+    i2->setVariables("x=3");
+  return 0;
+
 }
