@@ -99,9 +99,9 @@ class Interpreter {
   string removeVarsTovalues(string input);
   //bool isValid(map<string, double>);
   Expression* interpret(string);
-  int isPrecedence (char curr);
-  deque<char> shuntingYard(std::string);
-  Expression* buildExpression( deque<char>);
+  int isPrecedence (string curr);
+  deque<char> shuntingYard(string);
+  Expression* buildExpression( deque<string>);
   void freeAllExpressions();
 };
 

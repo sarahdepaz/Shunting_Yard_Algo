@@ -128,7 +128,7 @@ bool Interpreter::isValid(map<string, double> varMap) {
 */
 
 Expression* Interpreter::interpret(string str) {
-  // Replacing in the string the var by their numberic value
+  // Replacing in the string the var by their numeric value
   int counter = 0;
   string varBuffer[this->varMap.size()];
   for (int i = 0; i < str.length(); i++) {
@@ -151,37 +151,38 @@ Expression* Interpreter::interpret(string str) {
     }
   }
   // ShuntingYard
-  stack<char> opStack;
-  deque<char> valQueue;
+  stack<string> opStack;
+  deque<string> valQueue;
   for (int i = 0; i < str.length(); i++) {
     char curr = str[i];
+    string currStr(1,curr);
     if (isdigit(curr)) {
-      valQueue.push_back(curr);
-    } else if (curr == '+' || curr == '-' || curr == '*' || curr == '/') {
-      if ((curr == '+' || curr == '-') && i == 0) {
-        if (curr == '+') {
-          curr = '$';
+      valQueue.push_back(currStr);
+    } else if (currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") {
+      if ((currStr == "+" || currStr == "-") && i == 0) {
+        if (currStr == "+") {
+          currStr = "$";
         } else {
-          curr = '#';
+          currStr = "#";
         }
-      } else if ((curr == '+' || curr == '-') && str[i - 1] == '(') {
-        if (curr == '+') {
-          curr = '$';
+      } else if ((currStr == "+" || currStr == "-") && str[i-1] == '(') {
+        if (currStr == "+") {
+          currStr = "$";
         } else {
-          curr = '#';
+          currStr = "#";
         }
       }
-      while (!opStack.empty() && isPrecedence(curr) < isPrecedence(opStack.top())) {
+      while (!opStack.empty() && isPrecedence(currStr) < isPrecedence(opStack.top())) {
         valQueue.push_back(opStack.top());
         opStack.pop();
       }
-      opStack.push(curr);
+      opStack.push(currStr);
     }
     if (curr == '(') {
-      opStack.push(curr);
+      opStack.push(currStr);
     }
     if (curr == ')') {
-      while (opStack.top() != '(') {
+      while (opStack.top() != "(") {
         valQueue.push_back(opStack.top());
         opStack.pop();
       }
@@ -196,8 +197,9 @@ Expression* Interpreter::interpret(string str) {
   return e;
 }
 // Priority of operators
-int Interpreter::isPrecedence(char curr) {
+int Interpreter::isPrecedence(string strcurr) {
   int priority = -27;
+  char curr = strcurr[0];
   switch(curr) {
     default: break;
     case '+': priority=1; break;
@@ -210,10 +212,10 @@ int Interpreter::isPrecedence(char curr) {
   return priority;
 }
 // Build expression
-Expression* Interpreter::buildExpression(deque <char> postfix){
+Expression* Interpreter::buildExpression(deque <string> postfix){
   stack<Expression*> expStack;
-  char curr = postfix.front();
-  string currStr(1,curr);
+  string currStr = postfix.front();
+  //string currStr(1,curr);
   while(!postfix.empty() && isdigit(currStr[0])) {
     double var = stod(currStr);
     expStack.push(new Value(var));
