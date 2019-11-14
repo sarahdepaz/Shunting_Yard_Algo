@@ -127,90 +127,75 @@ bool Interpreter::isValid(map<string, double> varMap) {
 }
 */
 
-string Interpreter::removeVarsTovalues(string input) {
-  int varSize = this->varMap.size();
-  string bufferVar[varSize];
+Expression* Interpreter::interpret(string str) {
+  // Replacing in the string the var by their numberic value
   int counter = 0;
-  /* Replace variables by their value to then run SY */
-  for (int i = 0; i < input.length(); i++) {
-    if ((input[i] >= 'a' && input[i] <= 'z') || (input[i] >= 'A' && input[i] <= 'Z')) {
-      while (input[i] != '+' && input[i] != '-' && input[i] != '/' && input[i] != '*' &&
-          input[i] != '(' && input[i] != ')') {
-        bufferVar[counter] += input[i];
+  string varBuffer[this->varMap.size()];
+  for (int i = 0; i < str.length(); i++) {
+    if ((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z')) {
+      while (str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '(' && str[i] != ')') {
+        varBuffer[counter] += str[i];
         i++;
       }
       counter++;
     }
   }
   for (int j = 0; j < counter; j++) {
-    cout << endl;
-    string var = varMap.find(bufferVar[j])->first;
-    string value = varMap.find(bufferVar[j])->second;
-    size_t position = input.find(var);
-    input.replace(position, var.length(), value);
-  }
-  cout << input << endl;
-  return input;
-}
-
-Expression* Interpreter::interpret(string str) {
-
-}
-
-deque<char> Interpreter::shuntingYard(string input) {
-  stack <char> opStack;
-  deque <char> valQueue;
-  for(int i=0; i<input.length(); i++) {
-    char curr = input[i];
-    if(isdigit(curr)) {
-      valQueue.push_back(curr);
+    if (this->varMap.find(varBuffer[j]) == varMap.end()) {
+      throw "no such variable";
+    } else {
+      string var = varMap.find(varBuffer[j])->first;
+      string value = varMap.find(varBuffer[j])->second;
+      size_t position = str.find(var);
+      str.replace(position, var.length(), value);
     }
-    else if(curr == '+' || curr == '-' || curr == '*' || curr == '/') {
-      if((curr=='+' || curr=='-') && i==0) {
-        if(curr=='+') {
-          curr='$';
+  }
+  // ShuntingYard
+  stack<char> opStack;
+  deque<char> valQueue;
+  for (int i = 0; i < str.length(); i++) {
+    char curr = str[i];
+    if (isdigit(curr)) {
+      valQueue.push_back(curr);
+    } else if (curr == '+' || curr == '-' || curr == '*' || curr == '/') {
+      if ((curr == '+' || curr == '-') && i == 0) {
+        if (curr == '+') {
+          curr = '$';
+        } else {
+          curr = '#';
         }
-        else {
-          curr='#';
+      } else if ((curr == '+' || curr == '-') && str[i - 1] == '(') {
+        if (curr == '+') {
+          curr = '$';
+        } else {
+          curr = '#';
         }
       }
-      else if ((curr=='+' || curr=='-') && input[i-1]=='(') {
-        if(curr=='+') {
-          curr='$';
-        }
-        else {
-          curr='#';
-        }
-      }
-      while(!opStack.empty() && isPrecedence(curr) < isPrecedence(opStack.top())) {
+      while (!opStack.empty() && isPrecedence(curr) < isPrecedence(opStack.top())) {
         valQueue.push_back(opStack.top());
         opStack.pop();
       }
       opStack.push(curr);
     }
-    if(curr == '(') {
+    if (curr == '(') {
       opStack.push(curr);
     }
-    if(curr == ')') {
-      while(opStack.top()!='(') {
+    if (curr == ')') {
+      while (opStack.top() != '(') {
         valQueue.push_back(opStack.top());
         opStack.pop();
       }
       opStack.pop();
     }
   }
-  while(!opStack.empty()) {
+  while (!opStack.empty()) {
     valQueue.push_back(opStack.top());
     opStack.pop();
   }
-
-  while(!valQueue.empty()) {
-    cout << valQueue.front() << " ";
-    valQueue.pop_front();
-  }
-
-  return valQueue;
+  Expression *e = buildExpression(valQueue);
+  return e;
 }
+// Priority of operators
 int Interpreter::isPrecedence(char curr) {
   int priority = -27;
   switch(curr) {
@@ -224,6 +209,7 @@ int Interpreter::isPrecedence(char curr) {
   }
   return priority;
 }
+// Build expression
 Expression* Interpreter::buildExpression(deque <char> postfix){
   stack<Expression*> expStack;
   char curr = postfix.front();
@@ -269,22 +255,4 @@ Expression* Interpreter::buildExpression(deque <char> postfix){
   }
   return expStack.top();
 }
-/*
-void Interpreter::freeAllExpressions() {
-  if (!this->expToFree.empty()) {
-    std::vector<Expression*>::iterator it = this->expToFree.begin();
-    for (; it != this->expToFree.end(); ++it) {
 
-      if (*it != nullptr) {
-        delete(*it);
-        --this->number_of_expressions_to_delete;
-        //this->expToFree.erase(it);
-      }
-
-      if (this->number_of_expressions_to_delete == 0) {
-        break;
-      }
-    }
-  }
-}
-*/
