@@ -157,8 +157,21 @@ Expression* Interpreter::interpret(string str) {
     char curr = str[i];
     string currStr(1,curr);
     if (isdigit(curr)) {
-      valQueue.push_back(currStr);
-    } else if (currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") {
+      if (i + 1 < str.length()) {
+        if (str[i + 1] == '.') {
+          int j = i + 1;
+          while (!(currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") && j < str.length()) {
+            curr = str[j];
+            currStr = curr;
+            valQueue.push_back(currStr);
+            j++;
+          }
+          i = j;
+        }
+      }
+        valQueue.push_back(currStr);
+      }
+      else if (currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") {
       if ((currStr == "+" || currStr == "-") && i == 0) {
         if (currStr == "+") {
           currStr = "$";
