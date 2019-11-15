@@ -96,6 +96,7 @@ class Interpreter {
     this->expToFree.clear();
   };
   void setVariables(string input);
+  bool isOperator(char op);
   string removeVarsTovalues(string input);
   //bool isValid(map<string, double>);
   Expression* interpret(string);

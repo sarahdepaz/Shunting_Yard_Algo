@@ -153,22 +153,13 @@ Expression* Interpreter::interpret(string str) {
   // ShuntingYard
   stack<string> opStack;
   deque<string> valQueue;
+  int counterFloat = 0;
   for (int i = 0; i < str.length(); i++) {
     char curr = str[i];
     string currStr(1,curr);
-    if (isdigit(curr)) {
-      if (i + 1 < str.length()) {
-        if (str[i + 1] == '.') {
-          int j = i + 1;
-          while (!(currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") && j < str.length()) {
-            curr = str[j];
-            currStr = curr;
-            valQueue.push_back(currStr);
-            j++;
-          }
-          i = j;
-        }
-      }
+    // change to is not operator
+    if (!isOperator(curr)) {
+      //todo fix handling string and not char for floting point
         valQueue.push_back(currStr);
       }
       else if (currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") {
@@ -208,6 +199,15 @@ Expression* Interpreter::interpret(string str) {
   }
   Expression *e = buildExpression(valQueue);
   return e;
+}
+
+// Is operator
+bool Interpreter::isOperator(char op) {
+  if((op == '+') || (op == '-') || (op == '*') || (op == '$')||
+  (op == '#') || (op == '(') || (op == ')')){
+    return true;
+  }
+  return false;
 }
 // Priority of operators
 int Interpreter::isPrecedence(string strcurr) {
