@@ -12,8 +12,7 @@ class BinaryOperator : public Expression {
   Expression* left {nullptr};
   Expression* right {nullptr};
  protected:
-  BinaryOperator(Expression *left, Expression *right) : left(left), right
-      (right) {}
+  BinaryOperator(Expression* l, Expression* r) : left(l), right(r) {}
   Expression* getLeft();
   Expression* getRight();
  public:
@@ -22,22 +21,22 @@ class BinaryOperator : public Expression {
 };
 class Plus : public BinaryOperator {
  public:
-  Plus(Expression *left, Expression *right) : BinaryOperator(left,right){}
+  Plus(Expression* l, Expression* r) : BinaryOperator(l,r){}
   double calculate() override;
 };
 class Minus : public BinaryOperator {
  public:
-  Minus(Expression *left, Expression *right) : BinaryOperator(left,right){}
+  Minus(Expression* l, Expression* r) : BinaryOperator(l,r){}
   double calculate() override ;
 };
 class Mul : public BinaryOperator {
  public:
-  Mul(Expression *left, Expression *right) : BinaryOperator(left,right){}
+  Mul(Expression* l, Expression* r) : BinaryOperator(l,r){}
   double calculate() override;
 };
 class Div : public BinaryOperator {
  public:
-  Div(Expression *left, Expression *right) : BinaryOperator(left,right){}
+  Div(Expression* l, Expression* r) : BinaryOperator(l,r){}
   double calculate() override;
 };
 class Variable : public Expression {
@@ -46,15 +45,14 @@ class Variable : public Expression {
   double value;
  public:
   double calculate() override;
-  Variable(string name, double value) : name(name), value(value) {}
-  Variable& operator+=(double plusEqual);
-  Variable& operator-=(double minusEqual);
+  Variable(string n, double val) : name(n), value(val) {}
+  Variable& operator+=(double);
+  Variable& operator-=(double);
   Variable& operator--();
   Variable& operator--(int);
   // Prefix
   Variable& operator++();
   // Postfix
-  //todo check with daniela
   Variable& operator++(int);
 };
 class Value : public Expression {
@@ -68,7 +66,7 @@ class UnaryOperator : public Expression {
  protected:
   Expression* exp {nullptr};
  public:
-  explicit UnaryOperator(Expression* exp) : exp(exp) {}
+  explicit UnaryOperator(Expression* e) : exp(e) {}
   Expression* getExp();
   void setExp(Expression* e);
 };
@@ -76,36 +74,29 @@ class UPlus : public UnaryOperator {
  protected:
   Expression* exp {nullptr};
  public:
-  explicit UPlus(Expression *exp) : UnaryOperator(exp){}
+  explicit UPlus(Expression* e) : UnaryOperator(e){}
   double calculate() override;
 };
 class UMinus : public UnaryOperator {
  protected:
   Expression* exp {nullptr};
  public:
-  explicit UMinus(Expression *exp) : UnaryOperator(exp){}
+  explicit UMinus(Expression* e) : UnaryOperator(e){}
   double calculate() override;
 };
 class Interpreter {
  private:
   map<string, string> varMap;
-  unsigned int number_of_expressions_to_delete = 0;
-  std::vector<Expression*> expToFree;
  public:
   Interpreter(){};
-  ~Interpreter(){
-    this->expToFree.clear();
-  };
+  ~Interpreter(){};
   void setVariables(string);
   bool isOperator(string);
   bool isChar(char c);
-  string removeVarsTovalues(string);
   //bool isValid(map<string, double>);
   Expression* interpret(string);
   int isPrecedence (string);
-  deque<string> shuntingYard(string);
   Expression* buildExpression(deque<string>);
-  void freeAllExpressions();
 };
 
 #endif //EX1_ALL_IN_ONE_EX1_H
