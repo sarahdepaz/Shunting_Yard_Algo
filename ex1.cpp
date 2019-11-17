@@ -17,12 +17,6 @@ Expression* BinaryOperator :: getLeft() {
 Expression* BinaryOperator :: getRight() {
   return this->right;
 }
-void BinaryOperator :: setRight(Expression* r) {
-  this->right = r;
-}
-void BinaryOperator :: setLeft(Expression* l) {
-  this->left = l;
-}
 double Plus :: calculate() {
   return this->getLeft()->calculate() + this->getRight()->calculate();
 }
@@ -86,9 +80,9 @@ double UMinus :: calculate() {
 void Interpreter::setVariables (string givenString) {
   string buffer, sLeft, sRight, varName;
   bool flag = false;
-  for (int i = 0; i < givenString.length(); i++) {
+  for (unsigned int i = 0; i < givenString.length(); i++) {
     if (givenString[i] == ';') {
-      for (int j = 0; j < buffer.length(); j++) {
+      for (unsigned int j = 0; j < buffer.length(); j++) {
         if (buffer[j] == '=') {
           sLeft = varName;
           varName = "";
@@ -190,7 +184,7 @@ bool Interpreter::isChar(char c) {
 }
 Expression* Interpreter::interpret(string str) {
   stack <string> opStack;
-  deque <string> valQueue;
+  deque <string> valueQ;
   // Replacing in the string the var by their numeric value
   int counter = 0;
   string varBuffer[this->varMap.size()];
@@ -217,64 +211,64 @@ Expression* Interpreter::interpret(string str) {
   for(unsigned int i=0; i<str.length(); i++) {
     string buffer = "";
     char currChar = str[i];
-    string currStr(1, currChar);
-    bool operandDetected = false;
-    while (!isOperator(currStr) && i < str.length()) {
-      operandDetected = true;
-      buffer += currStr;
+    string strCurr(1, currChar);
+    bool variableFlag = false;
+    while (!isOperator(strCurr) && i < str.length()) {
+      variableFlag = true;
+      buffer += strCurr;
       i++;
       currChar = str[i];
-      currStr = currChar;
+      strCurr = currChar;
     }
-    if(operandDetected) {
-      valQueue.push_back(buffer);
-      operandDetected = false;
+    if(variableFlag) {
+      valueQ.push_back(buffer);
+      variableFlag = false;
     }
-    if(currStr == "+" || currStr == "-" || currStr == "*" || currStr == "/") {
-      if((currStr=="+" || currStr=="-") && i==0) {
-        if(currStr=="+") {
-          currStr="$";
+    if(strCurr == "+" || strCurr == "-" || strCurr == "*" || strCurr == "/") {
+      // Unary
+      if((strCurr=="+" || strCurr=="-") && i==0) {
+        if(strCurr=="+") {
+          strCurr="$";
         }
         else {
-          currStr="#";
+          strCurr="#";
         }
       }
-      else if ((currStr=="+" || currStr=="-") && str[i-1]=='(') {
-        if(currStr =="+") {
-          currStr="$";
+      else if ((strCurr=="+" || strCurr=="-") && str[i-1]=='(') {
+        if(strCurr =="+") {
+          strCurr="$";
         }
         else {
-          currStr="#";
+          strCurr="#";
         }
       }
-      while(!opStack.empty() && isPrecedence(currStr)<isPrecedence(opStack.top())) {
-        valQueue.push_back(opStack.top());
+      while(!opStack.empty() && isPrecedence(strCurr)< isPrecedence(opStack.top())) {
+        valueQ.push_back(opStack.top());
         opStack.pop();
       }
-      opStack.push(currStr);
+      opStack.push(strCurr);
     }
-    if(currStr == "(") {
-      opStack.push(currStr);
+    if(strCurr == "(") {
+      opStack.push(strCurr);
     }
-    if(currStr == ")") {
+    if(strCurr == ")") {
       while(opStack.top()!="(") {
-        valQueue.push_back(opStack.top());
+        valueQ.push_back(opStack.top());
         opStack.pop();
       }
       opStack.pop();
     }
   }
   while(!opStack.empty()) {
-    valQueue.push_back(opStack.top());
+    valueQ.push_back(opStack.top());
     opStack.pop();
   }
-
-  Expression* e = buildExpression(valQueue);
+  Expression* e = buildExpression(valueQ);
   return e;
 }
 // Is an operator
-bool Interpreter::isOperator(string op) {
-  return op == "+" || op == "-" || op == "*" || op == "/" || op == "$" || op == "#" || op == "(" || op == ")";
+bool Interpreter::isOperator(string operatorC) {
+  return operatorC == "+" || operatorC == "-" || operatorC == "*" || operatorC == "/" || operatorC == "$" || operatorC == "#" || operatorC == "(" || operatorC == ")";
 }
 // Priority of operators
 int Interpreter::isPrecedence(string str) {

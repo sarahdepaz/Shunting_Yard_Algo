@@ -15,9 +15,6 @@ class BinaryOperator : public Expression {
   BinaryOperator(Expression* l, Expression* r) : left(l), right(r) {}
   Expression* getLeft();
   Expression* getRight();
- public:
-  void setRight(Expression* r);
-  void setLeft(Expression* l);
 };
 class Plus : public BinaryOperator {
  public:
