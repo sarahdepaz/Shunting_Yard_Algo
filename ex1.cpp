@@ -85,16 +85,16 @@ double UMinus :: calculate() {
 }
 void Interpreter::setVariables (string givenString) {
   string buffer, sLeft, sRight, varName;
-  bool isExp = false;
+  bool flag = false;
   for (int i = 0; i < givenString.length(); i++) {
     if (givenString[i] == ';') {
       for (int j = 0; j < buffer.length(); j++) {
         if (buffer[j] == '=') {
           sLeft = varName;
           varName = "";
-          isExp = true;
+          flag = true;
         }
-        else if (isExp) {
+        else if (flag) {
           sRight += buffer[j];
         }
         else {
@@ -102,7 +102,7 @@ void Interpreter::setVariables (string givenString) {
         }
       }
       this->varMap.insert(pair<string, string>(sLeft, sRight));
-      isExp = false;
+      flag = false;
       buffer = "";
       sRight="";
     }
@@ -115,9 +115,9 @@ void Interpreter::setVariables (string givenString) {
       if (buffer[j] == '=') {
         sLeft = varName;
         varName = "";
-        isExp = true;
+        flag = true;
       }
-      else if (isExp) {
+      else if (flag) {
         sRight +=  buffer[j];
       }
       else {
@@ -272,16 +272,14 @@ Expression* Interpreter::interpret(string str) {
   Expression* e = buildExpression(valQueue);
   return e;
 }
-
-
-// Is operator
+// Is an operator
 bool Interpreter::isOperator(string op) {
   return op == "+" || op == "-" || op == "*" || op == "/" || op == "$" || op == "#" || op == "(" || op == ")";
 }
 // Priority of operators
-int Interpreter::isPrecedence(string strcurr) {
+int Interpreter::isPrecedence(string str) {
   int priority = -27;
-  char curr = strcurr[0];
+  char curr = str[0];
   switch(curr) {
     default: break;
     case '+': priority=1; break;
@@ -310,26 +308,26 @@ Expression* Interpreter::buildExpression(deque <string> postfix) {
       Expression *left = expStack.top();
       expStack.pop();
       if (currStr == "+") {
-        Expression *plus = new Plus(left, right);
+        Expression* plus = new Plus(left, right);
         expStack.push(plus);
       } else if (currStr == "-") {
-        Expression *minus = new Minus(left, right);
+        Expression* minus = new Minus(left, right);
         expStack.push(minus);
       } else if (currStr == "*") {
-        Expression *mul = new Mul(left, right);
-        expStack.push(mul);
+        Expression* mult = new Mul(left, right);
+        expStack.push(mult);
       } else if (currStr == "/") {
-        Expression *div = new Div(left, right);
+        Expression* div = new Div(left, right);
         expStack.push(div);
       }
     } else if (currStr == "$" || currStr == "#") {
       Expression *one = expStack.top();
       expStack.pop();
       if (currStr == "$") {
-        Expression *uplus = new UPlus(one);
+        Expression* uplus = new UPlus(one);
         expStack.push(uplus);
       } else {
-        Expression *uminus = new UMinus(one);
+        Expression* uminus = new UMinus(one);
         expStack.push(uminus);
       }
     }
