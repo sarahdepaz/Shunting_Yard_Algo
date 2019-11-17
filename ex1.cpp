@@ -186,8 +186,8 @@ Expression* Interpreter::interpret(string str) {
   stack <string> opStack;
   deque <string> valueQ;
   // Replacing in the string the var by their numeric value
-  int counter = 0;
-  string varBuffer[this->varMap.size()];
+  unsigned int counter = 0;
+  string varBuffer[20];
   for (unsigned int i = 0; i < str.length(); i++) {
     if (isChar(str[i])) {
       while (str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '(' && str[i] != ')') {
