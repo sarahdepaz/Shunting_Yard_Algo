@@ -6,6 +6,7 @@
 #include <stack>
 #include <vector>
 #include <map>
+#include <queue>
 
 class BinaryOperator : public Expression {
   Expression* left {nullptr};
@@ -95,14 +96,15 @@ class Interpreter {
   ~Interpreter(){
     this->expToFree.clear();
   };
-  void setVariables(string input);
-  bool isOperator(char op);
-  string removeVarsTovalues(string input);
+  void setVariables(string);
+  bool isOperator(string);
+  bool isChar(char c);
+  string removeVarsTovalues(string);
   //bool isValid(map<string, double>);
   Expression* interpret(string);
-  int isPrecedence (string curr);
-  deque<char> shuntingYard(string);
-  Expression* buildExpression( deque<string>);
+  int isPrecedence (string);
+  deque<string> shuntingYard(string);
+  Expression* buildExpression(deque<string>);
   void freeAllExpressions();
 };
 
