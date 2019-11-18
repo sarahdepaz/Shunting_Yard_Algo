@@ -90,7 +90,7 @@ class Interpreter {
   void setVariables(string);
   bool isOperator(string);
   bool isChar(char c);
-  //bool isValid(map<string, double>);
+  bool isValidVariable(map<string, string>);
   Expression* interpret(string);
   int isPrecedence (string);
   Expression* buildExpression(deque<string>);

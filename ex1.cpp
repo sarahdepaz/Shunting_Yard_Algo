@@ -82,6 +82,13 @@ void Interpreter::setVariables (string givenString) {
   bool flag = false;
   for (unsigned int i = 0; i < givenString.length(); i++) {
     if (givenString[i] == ';') {
+      if(givenString[i+1]==';') {
+        throw "illegal variable assignment!";
+      }
+    }
+  }
+  for (unsigned int i = 0; i < givenString.length(); i++) {
+    if (givenString[i] == ';') {
       for (unsigned int j = 0; j < buffer.length(); j++) {
         if (buffer[j] == '=') {
           sLeft = varName;
@@ -125,65 +132,35 @@ void Interpreter::setVariables (string givenString) {
     else {
       this->varMap.insert(pair<string, string>(sLeft, sRight));
     }
-    // Print helper
-    std::map<int,std::string> m = {{1, "one"}, {2, "two"}, {3, "three"}};
-    for (const auto& x : m) {
-      continue;
+    bool validVar = false;
+    validVar = isValidVariable(this->varMap);
+    if(validVar == false) {
+      throw "illegal variable assignment!";
     }
   }
 }
-
-/*
-void Interpreter :: setVariables(string input) {
-  bool varGood = false;
-  bool valGood = false;
-  std::vector<std::string> varNames, varValues;
-  for (std::istringstream in(input);;) {
-    std::string lhs, rhs;
-    if (!std::getline(in, lhs, '=') || !std::getline(in, rhs, ';'))
-      break;
-    varNames.push_back(lhs);
-    varValues.push_back(rhs);
-  }
-  regex validVar("[a-zA-Z]+[_a-zA-Z0-9]*");
-  regex validVal("-?[0-9].?[0-9]*");
-  varGood = false;
-  valGood = false;
-  for (size_t i = 0, n = varValues.size(); i < n; ++i) {
-    if (regex_match(varNames[i], validVar)) {
-      varGood = true;
-      if (regex_match(varValues[i], validVal)) {
-        valGood = true;
-        map<string, string>::iterator check = varMap.find(varNames[i]);
-        if (check != varMap.end()) {
-          check->second = varValues[i];
-        } else {
-          this->varMap.insert(pair<string, string>(varNames[i], varValues[i]));
-        }
-      }
+// Validation
+bool Interpreter::isValidVariable(map<string, string> map) {
+  string varBuff[20];
+  for (std::map<string,string>::iterator it=map.begin(); it!=map.end(); ++it) {
+    string var = it->first;
+    string value = it->second;
+    if(isdigit(var[0])){
+      return false;
     }
-    if (varGood == false || valGood == false) {
-      cout << "\nillegal variable assignment! \n";
-    }
-  }
-}
- */
-
-/*
-bool Interpreter::isValid(map<string, double> varMap) {
-  regex validVar("[a-zA-Z]+[_a-zA-Z0-9]*");
-  regex validVal("-?[0-9].?[0-9]+[0-9]*");
-  map<string, double>::iterator itr;
-  for (itr = varMap.begin(); itr != varMap.end(); ++itr) {
-    if(regex_match(itr->first, validVar)){
-      if(regex_match(to_string(itr->second),validVal)){
+    for (unsigned int k = 0; k <value.length() ; ++k) {
+      if(isdigit(value[k]) || value[0] == '-' || value[k] == '.' ){
         return true;
       }
+      // two points
+      if(value[k] == '.' && value[k+1] == '.') {
+        return false;
+      }
     }
   }
-  return false;
+  return true;
 }
-*/
+
 bool Interpreter::isChar(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
@@ -191,7 +168,9 @@ Expression* Interpreter::interpret(string str) {
   stack<string> opStack;
   deque<string> valueQ;
   stack<char> parenthesis;
-  bool twoOperators;
+  unsigned int counter = 0;
+  string varBuffer[20];
+  bool twoOperators = false;
   for (unsigned int i = 0; i < str.length(); i++) {
     char char1 = str[i];
     if (char1 == '(') {
@@ -211,28 +190,30 @@ Expression* Interpreter::interpret(string str) {
   for (unsigned int i = 0; i < str.length(); i++) {
     if (str[i] == '+') {
       if(str[i+1] == '+') {
-        throw "illegal math expression";
+        twoOperators = true;
       }
     }
     if (str[i] == '-') {
       if(str[i+1] == '-') {
-        throw "illegal math expression";
+        twoOperators = true;
       }
     }
     if (str[i] == '*') {
       if(str[i+1] == '*') {
-        throw "illegal math expression";
+        twoOperators = true;
       }
     }
     if (str[i] == '/') {
-      if(str[i+1] == '/') {
-        throw "illegal math expression";
+      if (str[i + 1] == '/') {
+        twoOperators = true;
       }
     }
   }
+  if (twoOperators == true) {
+    throw "illegal math expression";
+  }
+  // Check entire string contains only numbers or chars or operators
   // Replacing in the string the var by their numeric value
-  unsigned int counter = 0;
-  string varBuffer[20];
   for (unsigned int i = 0; i < str.length(); i++) {
     if (isChar(str[i])) {
       while (str[i] != '+' && str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '(' && str[i] != ')') {
