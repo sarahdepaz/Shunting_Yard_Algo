@@ -125,6 +125,11 @@ void Interpreter::setVariables (string givenString) {
     else {
       this->varMap.insert(pair<string, string>(sLeft, sRight));
     }
+    // Print helper
+    std::map<int,std::string> m = {{1, "one"}, {2, "two"}, {3, "three"}};
+    for (const auto& x : m) {
+      continue;
+    }
   }
 }
 
@@ -183,8 +188,26 @@ bool Interpreter::isChar(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 Expression* Interpreter::interpret(string str) {
-  stack <string> opStack;
-  deque <string> valueQ;
+  stack<string> opStack;
+  deque<string> valueQ;
+  stack<char> parenthesis;
+  for (unsigned int i = 0; i < str.length(); i++) {
+    char char1 = str[i];
+    if (char1 == '(') {
+      parenthesis.push(char1);
+    } else if (char1 == ')') {
+      if (!parenthesis.empty()) {
+        parenthesis.pop();
+      } else {
+        throw "illegal math expression";
+      }
+    }
+  }
+  if (!parenthesis.empty()) {
+   throw "illegal math expression";
+  }
+  // check two operators in a row
+
   // Replacing in the string the var by their numeric value
   unsigned int counter = 0;
   string varBuffer[20];
