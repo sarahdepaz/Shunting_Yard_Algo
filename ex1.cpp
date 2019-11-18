@@ -191,6 +191,7 @@ Expression* Interpreter::interpret(string str) {
   stack<string> opStack;
   deque<string> valueQ;
   stack<char> parenthesis;
+  bool twoOperators;
   for (unsigned int i = 0; i < str.length(); i++) {
     char char1 = str[i];
     if (char1 == '(') {
@@ -207,7 +208,28 @@ Expression* Interpreter::interpret(string str) {
    throw "illegal math expression";
   }
   // check two operators in a row
-
+  for (unsigned int i = 0; i < str.length(); i++) {
+    if (str[i] == '+') {
+      if(str[i+1] == '+') {
+        throw "illegal math expression";
+      }
+    }
+    if (str[i] == '-') {
+      if(str[i+1] == '-') {
+        throw "illegal math expression";
+      }
+    }
+    if (str[i] == '*') {
+      if(str[i+1] == '*') {
+        throw "illegal math expression";
+      }
+    }
+    if (str[i] == '/') {
+      if(str[i+1] == '/') {
+        throw "illegal math expression";
+      }
+    }
+  }
   // Replacing in the string the var by their numeric value
   unsigned int counter = 0;
   string varBuffer[20];
