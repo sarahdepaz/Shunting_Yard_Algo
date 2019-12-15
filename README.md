@@ -14,4 +14,8 @@ run:
 
 g++ -std=c++11 *.cpp -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o a.out -pthread
 
+To test with your main:
+
+Compose a main.cpp and replace with current main.
+
 
