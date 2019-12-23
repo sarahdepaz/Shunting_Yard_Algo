@@ -8,9 +8,10 @@ Takes a math expression - creates a posfix tree according to Shunting Yard Algor
 Linux environment to run the code
   
 **How to run the code**:
+
 On terminal, save the files in same directory.
 
-run:
+**run**:
 
 g++ -std=c++11 *.cpp -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o a.out -pthread
 
