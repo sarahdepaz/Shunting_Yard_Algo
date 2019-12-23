@@ -1,13 +1,13 @@
-A simple infix to postfix calculator.
+# A simple infix to postfix calculator.
 
 Takes a math expression - creates a posfix tree according to Shunting Yard Algorethem and then calculates it.
 
 
-Prerequisites:
+*Prerequisites*:
 
 Linux environment to run the code
   
-How to run the code:
+**How to run the code**:
 On terminal, save the files in same directory.
 
 run:
