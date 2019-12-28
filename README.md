@@ -1,6 +1,6 @@
 # A simple infix to postfix calculator.
 
-Takes a math expression - creates a posfix tree according to Shunting Yard Algorethem and then calculates it.
+Takes a math expression - creates a posfix tree according to Shunting Yard Algorithm and then calculates it.
 
 
 *Prerequisites*:
